@@ -1,10 +1,11 @@
-*Build:*
-
+**Build:**
+```
 make all
+```
 
+**Usage:**
 
-*Usage:*
-
+```
 sgrotate <gpio> <degree>
-
+```
 
