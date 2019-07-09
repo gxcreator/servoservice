@@ -43,14 +43,20 @@ int gpio_pwm(int gpio, int count, int high_usec, int low_usec)
 {
 	char filename[PATH_MAX];
     FILE *file;
+	snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d/value", gpio);
 
-    snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d/value", gpio);
-    file = fopen(filename, "w");    if (file == NULL) return -1;
 	for(;count;count--)
 	{
+    	file = fopen(filename, "w");    if (file == NULL) return -1;
 	    fprintf(file, "%d\n", 1);
+	    fclose(file);
+
 	    usleep(high_usec);
+
+	    file = fopen(filename, "w");    if (file == NULL) return -1;
 	    fprintf(file, "%d\n", 0);
+	    fclose(file);
+	    
 	    usleep(low_usec);
 	}
 
