@@ -47,6 +47,7 @@ int gpio_set(int gpio, int value)
 	file = fopen(filename, "w");    if (file == NULL) return -1;
 	fprintf(file, "%d\n", value ? 1 : 0);
 	fclose(file);
+	return 0;
 }
 
 int gpio_pwm(int gpio, int count, int high_usec, int low_usec)
@@ -69,7 +70,7 @@ int gpio_pwm(int gpio, int count, int high_usec, int low_usec)
 
 		usleep(low_usec);
 	}
-
+	return 0;
 }
 
 /* angle -90..90 */
@@ -78,7 +79,7 @@ int sg90_rotate(int gpio, int angle, int rotate_duration)
 	/* 1000 usec + 500 + angle*1000/80 */
 	int duration = 1000 + 500 + angle * 1000 / 180;
 	/* 2 ms pulse: |1ms+0-1ms|___rest_of_2ms____| */
-	gpio_pwm(gpio, rotate_duration, duration, 20000 - duration);
+	return gpio_pwm(gpio, rotate_duration, duration, 20000 - duration);
 }
 
 int run_server(int gpio, int port)
@@ -155,12 +156,12 @@ int run_server(int gpio, int port)
 		if (result == 0)
 		{
 			printf("Sending ACK\n");
-			write(client_sock , SOCK_ACK, strlen(SOCK_ACK));
+			result = (write(client_sock , SOCK_ACK, strlen(SOCK_ACK)) > 0);
 		}
 		else
 		{
 			printf("ERROR: Unknown command\n");
-			write(client_sock , SOCK_NOACK, strlen(SOCK_NOACK));
+			result = (write(client_sock , SOCK_NOACK, strlen(SOCK_NOACK)) > 0);
 		}
 		memset( &client_message, 0, sizeof(client_message));
 	}
@@ -173,7 +174,9 @@ int run_server(int gpio, int port)
 	else if (read_size == -1)
 	{
 		perror("recv failed");
+		return 1;
 	}
+	return 0;
 }
 
 int main(int argc, char** argv)

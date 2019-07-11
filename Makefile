@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -O2
 LDFLAGS=
 SOURCES=main.c
-OBJECTS=$(SOURCES:.cpp=.o)
+OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=sgrotate
 
 all: $(SOURCES) $(EXECUTABLE)
